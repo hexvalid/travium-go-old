@@ -4,32 +4,15 @@ import (
 	"bytes"
 	"compress/gzip"
 	"encoding/base64"
+	"github.com/kataras/golog"
 	"github.com/vmihailenco/msgpack"
 	"io/ioutil"
-	"time"
 )
 
-type GameWorld struct {
-	UUID                    string `msgpack:"uuid"`
-	Shortcut                string `msgpack:"shortcut"`
-	Name                    string `msgpack:"name"`
-	URL                     string `msgpack:"url"`
-	Status                  int    `msgpack:"status"`
-	RegistrationKeyRequired bool   `msgpack:"registrationKeyRequired"`
-	Start                   int64  `msgpack:"start"`
-}
-
-func (gs *GameWorld) IsRegistrationOpen() bool {
-	return gs.Status == 1
-}
-
-func (gs *GameWorld) StartTime() time.Time {
-	return time.Unix(gs.Start, 0)
-}
-
-func GetGameWorlds(baseUrl string) (gameWorlds []GameWorld, err error) {
+func GetGameWorlds(baseUrl string) (gameWorlds []GameWorld, languageGroup LanguageGroup, err error) {
+	golog.Info("Server listesi ve dil grubu alınıyor...")
 	req := newRequest(methodGET, baseUrl, "", nil, nil)
-	res, err := execRequest(req, nil)
+	res, err := execRequest(req, true, nil)
 	if err != nil {
 		return
 	}
@@ -48,11 +31,12 @@ func GetGameWorlds(baseUrl string) (gameWorlds []GameWorld, err error) {
 		return
 	}
 
-	var gwl resGameWorldList
-	err = msgpack.Unmarshal(windowDataE4, &gwl)
+	var par parGameWorldAndLangugeGroup
+	err = msgpack.Unmarshal(windowDataE4, &par)
 	if err != nil {
 		return
 	}
-	gameWorlds = gwl.A.List
+	gameWorlds = par.A.List
+	languageGroup = par.LanguageGroup
 	return
 }

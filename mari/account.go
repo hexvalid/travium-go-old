@@ -1,9 +1,14 @@
 package mari
 
+import "net/http"
+
 type Account struct {
-	Email       string
-	GameWorld   GameWorld
-	HTTPHeaders HTTPHeaders
+	Username      string
+	Email         string
+	GameWorldUUID string
+	HTTPClient    http.Client
+	HTTPHeaders   HTTPHeaders
+	CookieJar     http.CookieJar
 }
 
 // @Account'un alt gereksinimleri:

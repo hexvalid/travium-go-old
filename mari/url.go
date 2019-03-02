@@ -1,3 +1,6 @@
 package mari
 
-const urlTailValidateEmail = "/gameworld/validateEmail"
+const (
+	urlTailValidateEmail = "/gameworld/validateEmail"
+	urlTailRegister      = "/gameworld/register"
+)
